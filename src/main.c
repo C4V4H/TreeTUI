@@ -10,24 +10,9 @@
 * @todo Add the folder to analize name on the args
 */
 int main() {
-    Node *selected_dir = NULL;
+    // @todo get the dir by arg and check if it exist
+    Node *node = initNode("../../Algorithms", NULL);
     
-    setlocale(LC_ALL, "");
-    // Inizializzazione di ncurses
-    initscr();            // Avvia la modalità ncurses
-    cbreak();             // Disabilita il buffering della linea
-    noecho();             // Non mostra i caratteri premuti
-
-    curs_set(FALSE);      // boh
-
-    Node *node = initNode("../../Algorithms");
-    printNode(node, selected_dir);
-
-    refresh();            // Mostra l'output sullo schermo
-    getch();              // Aspetta un input per terminare
-
-    // Termina ncurses
-    endwin();
-    return 0;    
+    startTUI(node);    
 }
 

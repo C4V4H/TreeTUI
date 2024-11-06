@@ -5,7 +5,7 @@
 
 #include "shared.h"
 
-Node* initNode(char[]);
-Node* getFile(char[]);
+Node* initNode(char[], Node*);
+Node* getFile(char[], Node*);
 
 #endif
