@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <locale.h>
+#include <stdbool.h>
 
 #include "../include/shared.h"
 #include "../include/backend.h"
@@ -11,8 +12,8 @@
 */
 int main() {
     // @todo get the dir by arg and check if it exist
-    Node *node = initNode("../../Algorithms", NULL);
+    Node *node = initNode("../../Algorithms", NULL, T_DIR);
     
-    startTUI(node);    
+    startTUI(node, false);    
 }
 

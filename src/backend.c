@@ -8,7 +8,7 @@
 #include "../include/backend.h"
 
 
-Node* initNode(char dir[], Node *father) {
+Node* initNode(char dir[], Node *father, int type) {
     DIR *folder;
     Node *node = malloc(sizeof(Node));  // Alloca memoria per il nodo
     if (node == NULL) {
@@ -18,6 +18,7 @@ Node* initNode(char dir[], Node *father) {
 
     node->name = strdup(dir);  // Copia il nome della directory
     node->father = father;
+    node->type = type;
     node->num_children = 0;
     node->is_expanded = 1;
     node->children = NULL;  // Inizialmente, nessun figlio
@@ -46,10 +47,12 @@ Node* initNode(char dir[], Node *father) {
         }
 
         if (entry->d_type == DT_DIR) {
-            node->children[node->num_children - 1] = initNode(path, node);  // Directory ricorsiva
+          node->children[node->num_children - 1] = initNode(path, node, getFileName(path)[0] == '.' ? T_HIDDEN_DIR : T_DIR);  // Directory ricorsiva
         } else if (entry->d_type == DT_REG) {
-            node->children[node->num_children - 1] = getFile(entry->d_name, node);  // File normale
-        }    
+          node->children[node->num_children - 1] = getFile(entry->d_name, node, T_FILE);  // File normale
+        } else {
+          node->children[node->num_children - 1] = getFile(entry->d_name, node, T_UNKNOWN);  // File normale
+        }
     }
 
     closedir(folder);
@@ -57,12 +60,18 @@ Node* initNode(char dir[], Node *father) {
     return node;   
 } 
 
-Node* getFile(char *name, Node *father) {
+Node* getFile(char *name, Node *father, int type) {
     Node *node = malloc(sizeof(Node));
     if (node == NULL) {
         perror("malloc");
         return NULL;
     }
+
+    if (strstr(name, ".") != NULL && type == T_FILE) 
+      node->type = type;
+    else 
+      node->type = T_BIN;
+    
     node->name = strdup(name);  // Copia il nome del file
     node->children = NULL;
     node->father = father;
