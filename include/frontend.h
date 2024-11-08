@@ -20,7 +20,7 @@ void printColored(short, char[], bool, bool);
 void printNode(Node*, Node*, bool);
 void printChilds(Node*, Node*, char[], bool, bool);
 void removeLast(char[], const char[]);
-void printw_selected(char*, int);
+void printw_selected(char*, int, bool);
 Node* getNext(Node*, Node*);
 Node* getPrevious(Node*, Node*);
 Node* getInner(Node*, Node*);

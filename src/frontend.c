@@ -7,6 +7,7 @@
 #include "../include/frontend.h"
 #include "../include/shared.h"
 
+#define SELECTED 10
 
 void startTUI(Node *node, bool all) {
     
@@ -32,7 +33,6 @@ void startTUI(Node *node, bool all) {
     initColors();
 
     input_handler(node, all);
-    // printNode(node, selected_dir);
 
     
     refresh();                          // Mostra l'output sullo schermo
@@ -50,8 +50,6 @@ void input_handler(Node *node, bool all) {
     do {
       pressed_key = getch();
 
-      //printf("%d: %c", pressed_key, pressed_key);
-      
       if (something_changed)
         clear();
       
@@ -93,7 +91,6 @@ void input_handler(Node *node, bool all) {
           
         default:
           something_changed = false;
-          // printNode(node, selected_dir, all);
           break;  
       }
 
@@ -105,9 +102,7 @@ void input_handler(Node *node, bool all) {
 void printNode(Node *node, Node *selected_node, bool all) {
     
     if (node == selected_node) {
-        // char str[sizeof(getFileName(node->name)) + 2 + STR_END];
-        // snprintf(str, sizeof(str), "%s\n", getFileName(node->name));
-        printw_selected(getFileName(node->name), node->type);
+        printw_selected(getFileName(node->name), node->type, true);
         printw("\n");
     } 
     else 
@@ -131,17 +126,14 @@ void printChilds(Node *node, Node *selected_node, char *tabs, bool isLast, bool 
       char str[sizeof(getFileName(node->name)) + 5 + STR_END];
       printw("%s%s── ", tabs, isLast ? "└" : "├");
       snprintf(str, sizeof(str), "%s%s", is_dir ? (node->is_expanded ? " ▼ " : " ▶ ") : "", getFileName(node->name));
-      printw_selected(str, node->type);
+      printw_selected(str, node->type, is_dir);
       printw("\n");
     } 
     else {
-      // printw("%s%s── ", tabs, isLast ? "└" : "├");
-      // if (node->type == T_DIR) print_dir_sym(node->is_expanded);
       printw("%s%s── %s", 
              tabs, 
              isLast ? "└" : "├", 
              is_dir ? (node->is_expanded ? " ▼ " : " ▶ ") : ""//, 
-             // getFileName(node->name)
            );
       printColored(node->type, getFileName(node->name), is_dir, false);
       printw("\n");
@@ -164,9 +156,7 @@ void toggle_dir(Node *node) {
 
 void print_dir_sym(bool opened) {
   printColored(DEFAULT, opened ? "▼" : "▶", true, false);
-  // printw(opened ? "+" : "-");
   printw(" ");
-  // attroff(A_REVERSE | A_BLINK);
 }
 
 Node* getNext(Node *node, Node *origin) {
@@ -201,8 +191,9 @@ Node* getPrevious(Node *node, Node *origin) {
     if (node == children[i])
       index = i;
   } 
-  // int index = (int)(node - children[0]); // Calcola l'indice di node
+  
   return (index > 0) ? children[index - 1] : children[node->father->num_children - 1];
+  
 }
 
 Node* getInner(Node *node, Node *origin) {
@@ -228,14 +219,8 @@ Node* getOuter(Node *node, Node *origin) {
 /**
 * @todo make it blink
 */
-void printw_selected(char *str, int type) {
-    // int len = strlen(str);
-    // attron(A_REVERSE);
-    // attron(A_BLINK);
-    // printw(str);
-    // attron(A_BLINK);
-    // attroff(A_REVERSE);
-    printColored(type + 100, str, true, false);
+void printw_selected(char *str, int type, bool is_dir) {
+    printColored(SELECTED, str, is_dir, false);
 }
 
 
@@ -256,29 +241,13 @@ void printColored(short color, char str[], bool bold, bool reverse) {
 
 
 void initColors() {
-  int default_bg = -1, offset = 0;
-
-  for (int i = 0; i<2; i++) {
-    if (i != 0) {
-      default_bg = COLOR_BLACK;
-      offset = 100;
-    }
-      
-    // attroff(A_DIM);
-    // Definizione delle coppie di colori
-    init_pair(offset + DEFAULT,                  COLOR_WHITE,    default_bg  );
-    // init_pair(offset + DIR_STATE_SYMBOL_COLOR,   default_bg,     COLOR_BLACK );      // Simboli di stato (+ o -)
-    init_pair(offset + T_DIR,                    COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
-    init_pair(offset + T_HIDDEN_DIR,             COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
-    init_pair(offset + T_FILE,                   COLOR_WHITE,    default_bg  );      // File generici
-    init_pair(offset + T_BIN,                    COLOR_GREEN,    default_bg  );      // File binari
-    // init_pair(1, COLOR_WHITE, -1);
-    // init_pair(offset + OBJ_DIR_COLOR,            COLOR_RED,      default_bg  );      // Cartella obj
-    // init_pair(offset + BIN_DIR_COLOR,            COLOR_GREEN,    default_bg  );      // Cartella bin
-    // init_pair(offset + SRC_DIR_COLOR,            COLOR_CYAN,     default_bg  );      // Cartella src
-    // init_pair(offset + INCLUDE_DIR_COLOR,        COLOR_MAGENTA,  default_bg  );      // Cartella include
-    // init_pair(offset + C_FILE_COLOR,             COLOR_BLUE,     default_bg  );      // File .c
-    // init_pair(offset + H_FILE_COLOR,             COLOR_MAGENTA,  default_bg  );      // File .h 
-  }
+  int default_bg = -1;
+  
+  init_pair(SELECTED,                 -1,             COLOR_WHITE );
+  init_pair(DEFAULT,                  COLOR_WHITE,    default_bg  );
+  init_pair(T_DIR,                    COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
+  init_pair(T_HIDDEN_DIR,             COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
+  init_pair(T_FILE,                   COLOR_WHITE,    default_bg  );      // File generici
+  init_pair(T_BIN,                    COLOR_GREEN,    default_bg  );      // File binari
 }
 
