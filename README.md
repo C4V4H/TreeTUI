@@ -14,6 +14,8 @@ later on I will put some images to let y'all see how it looks like, both alone a
 ToDo list:
 
 - Fix truncation when a longer file is selected
+- Make the damn selection blink
+- Avoid flickering when an edit occurs.
 - Prevent users from entering a closed directory 
 - Add icons (potentially by adapting code from [this file](https://github.com/lsd-rs/lsd/blob/master/src/theme/icon.rs))
 - Add args (like -all, -icons, -colors, -closed, -opened, -sort)
