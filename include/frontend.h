@@ -16,18 +16,21 @@
 
 void startTUI(Node*, bool);
 void initColors();
-void printColored(short, char[], bool, bool);
+// void printColored(short, char[], bool, bool);
 void printNode(Node*, Node*, bool);
 void printChilds(Node*, Node*, char[], bool, bool);
 void removeLast(char[], const char[]);
-void printw_selected(char*, int, bool);
+// void printw_selected(char*, int);
+
+void input_handler(Node*, bool);
 Node* getNext(Node*, Node*);
 Node* getPrevious(Node*, Node*);
 Node* getInner(Node*, Node*);
 Node* getOuter(Node*, Node*);
-void input_handler(Node*, bool);
-void print_dir_sym(bool);
+
+// void print_dir_sym(bool);
 void toggle_dir(Node*);
+void print_colored(int, bool, bool, const char *, ...);
 
 
 #endif

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <locale.h>
+#include <string.h>
 
 #include "../include/frontend.h"
 #include "../include/shared.h"
@@ -100,13 +101,8 @@ void input_handler(Node *node, bool all) {
 }
 
 void printNode(Node *node, Node *selected_node, bool all) {
-    
-    if (node == selected_node) {
-        printw_selected(getFileName(node->name), node->type, true);
-        printw("\n");
-    } 
-    else 
-        printw("%s\n", getFileName(node->name));
+   
+    print_colored(node->type, true, (node==selected_node), "%s\n", getFileName(node->name));
     
     refresh();
     
@@ -120,24 +116,25 @@ void printChilds(Node *node, Node *selected_node, char *tabs, bool isLast, bool 
     
     if (node->type == T_HIDDEN_DIR && !all) return;
 
-    bool is_dir = node->type == T_DIR;
+    bool is_dir = node->type == T_DIR || node->type == T_HIDDEN_DIR;
+
+    print_colored(
+                  TABS_COLOR, false, false,
+                  "%s%s── ", tabs, isLast ? "└" : "├"
+                );
     
-    if (node == selected_node) {
-      char str[sizeof(getFileName(node->name)) + 5 + STR_END];
-      printw("%s%s── ", tabs, isLast ? "└" : "├");
-      snprintf(str, sizeof(str), "%s%s", is_dir ? (node->is_expanded ? " ▼ " : " ▶ ") : "", getFileName(node->name));
-      printw_selected(str, node->type, is_dir);
-      printw("\n");
-    } 
-    else {
-      printw("%s%s── %s", 
-             tabs, 
-             isLast ? "└" : "├", 
-             is_dir ? (node->is_expanded ? " ▼ " : " ▶ ") : ""//, 
-           );
-      printColored(node->type, getFileName(node->name), is_dir, false);
-      printw("\n");
+    if (is_dir) {
+      print_colored(
+                    DEFAULT, false, false, 
+                    "%s", node->is_expanded ? " ▼ " : " ▶ "
+                   );
     }
+    
+    print_colored(
+                  node->type, is_dir, (node == selected_node), 
+                  "%s\n", getFileName(node->name)
+                );
+   
     refresh();
     
     char new_tabs[255];
@@ -154,10 +151,7 @@ void toggle_dir(Node *node) {
   node->is_expanded = node->is_expanded == 0 ? 1 : 0; 
 }
 
-void print_dir_sym(bool opened) {
-  printColored(DEFAULT, opened ? "▼" : "▶", true, false);
-  printw(" ");
-}
+
 
 Node* getNext(Node *node, Node *origin) {
   if (node == NULL) 
@@ -173,8 +167,8 @@ Node* getNext(Node *node, Node *origin) {
     if (node == children[i])
       index = i;
   } 
-  // int index = (int)(node - children[0]); // Calcola l'indice di node
-  return (index + 1 < node->father->num_children) ? children[index + 1] : children[0];
+
+    return (index + 1 < node->father->num_children) ? children[index + 1] : children[0];
 }
 
 Node* getPrevious(Node *node, Node *origin) {
@@ -203,6 +197,9 @@ Node* getInner(Node *node, Node *origin) {
   if (node->children == NULL) 
     return node;
 
+  if (node->is_expanded == 0)
+    node->is_expanded = 1;
+
   return node->children[0];
 }
 
@@ -216,27 +213,21 @@ Node* getOuter(Node *node, Node *origin) {
   return node->father;
 }
 
-/**
-* @todo make it blink
-*/
-void printw_selected(char *str, int type, bool is_dir) {
-    printColored(SELECTED, str, is_dir, false);
-}
 
+void print_colored(int color, bool bold, bool underlined, const char *format, ...) {
+    attron(COLOR_PAIR(color));
+    if (bold)       attron(A_BOLD);
+    if (underlined) attron(A_UNDERLINE);
 
+    // Gestione degli argomenti variabili
+    va_list args;
+    va_start(args, format);
+    vw_printw(stdscr, format, args); // vw_printw funziona come vprintf, ma con ncurses
+    va_end(args);
 
-
-void printColored(short color, char str[], bool bold, bool reverse) {
-
-  attron(COLOR_PAIR(color));
-  if (bold   )  attron(A_BOLD);
-  if (reverse)  attron(A_REVERSE);
-  
-  printw(str);
-  
-  if (bold   )  attroff(A_BOLD);
-  if (reverse)  attroff(A_REVERSE);
-  attroff(COLOR_PAIR(color));
+    if (bold)       attroff(A_BOLD);
+    if (underlined) attroff(A_UNDERLINE);
+    attroff(COLOR_PAIR(color));
 }
 
 
@@ -249,5 +240,6 @@ void initColors() {
   init_pair(T_HIDDEN_DIR,             COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
   init_pair(T_FILE,                   COLOR_WHITE,    default_bg  );      // File generici
   init_pair(T_BIN,                    COLOR_GREEN,    default_bg  );      // File binari
+  init_pair(TABS_COLOR,               COLOR_BLACK,    default_bg  );
 }
 

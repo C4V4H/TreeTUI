@@ -9,7 +9,7 @@
 #define T_FILE 3
 #define T_BIN 4
 #define T_UNKNOWN 5
-#define DIR_STATE_SYMBOL_COLOR 6
+#define TABS_COLOR 6
 
 typedef struct Node {
     char *name;
