@@ -5,9 +5,11 @@ The goal of this project is to build a TUI in C to display a file tree, inspired
 If you’re here, please note that this project **does not** simply display the file tree like the tree command. Instead, it creates a custom TUI experience.
 
 
-I'm mainly building this for myself so, I want to use this as an exercise and with [helix editor](https://helix-editor.com/) and [zellij](https://zellij.dev).
+I'm mainly building this for myself.
+I want to use this as an exercise, and the goal usage is with the [helix editor](https://helix-editor.com/) and [zellij](https://zellij.dev).
 later on I will put some images to let y'all see how it looks like, both alone and with my zellij layout.
 
+\*sad hamster gif\*
 
 # This project is NOT FINISHED YET
 
