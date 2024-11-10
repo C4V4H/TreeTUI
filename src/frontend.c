@@ -51,6 +51,8 @@ void input_handler(Node *node, bool all) {
     do {
       pressed_key = getch();
 
+      // printw("%d", pressed_key);
+
       if (something_changed)
         clear();
       
@@ -58,6 +60,7 @@ void input_handler(Node *node, bool all) {
       
       switch (pressed_key) {
         case 'q':
+        case 27:
           go_on = false;
           break;
           
@@ -123,12 +126,8 @@ void printChilds(Node *node, Node *selected_node, char *tabs, bool isLast, bool 
                   "%s%s── ", tabs, isLast ? "└" : "├"
                 );
     
-    if (is_dir) {
-      print_colored(
-                    DEFAULT, false, false, 
-                    "%s", node->is_expanded ? " ▼ " : " ▶ "
-                   );
-    }
+    if (is_dir)
+      print_colored(DEFAULT, false, false, "%s", node->is_expanded ? " ▼ " : " ▶ ");
     
     print_colored(
                   node->type, is_dir, (node == selected_node), 

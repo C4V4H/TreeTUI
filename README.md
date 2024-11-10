@@ -15,6 +15,7 @@ later on I will put some images to let y'all see how it looks like, both alone a
 
 ToDo list:
 
+- Add support for dir's links.
 - Make the damn selection blink
 - Avoid flickering when an edit occurs.
 - Add icons (potentially by adapting code from [this file](https://github.com/lsd-rs/lsd/blob/master/src/theme/icon.rs))
