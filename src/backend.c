@@ -81,3 +81,4 @@ Node* getFile(char *name, Node *father, int type) {
     node->name = getFileName(node->path);
     return node;
 }
+
