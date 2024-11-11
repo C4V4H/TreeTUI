@@ -105,7 +105,7 @@ void input_handler(Node *node, bool all) {
 
 void printNode(Node *node, Node *selected_node, bool all) {
    
-    print_colored(node->type, true, (node==selected_node), "%s\n", getFileName(node->name));
+    print_colored(node->type, true, (node==selected_node), "%s\n", node->name);
     
     refresh();
     
@@ -131,7 +131,7 @@ void printChilds(Node *node, Node *selected_node, char *tabs, bool isLast, bool 
     
     print_colored(
                   node->type, is_dir, (node == selected_node), 
-                  "%s\n", getFileName(node->name)
+                  "%s\n", node->name
                 );
    
     refresh();
@@ -238,7 +238,9 @@ void initColors() {
   init_pair(T_DIR,                    COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
   init_pair(T_HIDDEN_DIR,             COLOR_BLUE,     default_bg  );      // Directory generali (in grassetto)
   init_pair(T_FILE,                   COLOR_WHITE,    default_bg  );      // File generici
-  init_pair(T_BIN,                    COLOR_GREEN,    default_bg  );      // File binari
+  init_pair(T_EXE,                    COLOR_GREEN,    default_bg  );      // File eseguibili
+  init_pair(T_FILE_LINK,              COLOR_MAGENTA,  default_bg  );      // link a file
+  init_pair(T_DIR_LINK,               COLOR_MAGENTA,  default_bg  );      // Link a cartelle
   init_pair(TABS_COLOR,               COLOR_BLACK,    default_bg  );
 }
 

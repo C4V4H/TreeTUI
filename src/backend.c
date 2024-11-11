@@ -16,12 +16,13 @@ Node* initNode(char dir[], Node *father, int type) {
         return NULL;
     }
 
-    node->name = strdup(dir);  // Copia il nome della directory
+    node->path = strdup(dir);  // Copia il nome della directory
     node->father = father;
     node->type = type;
     node->num_children = 0;
     node->is_expanded = 1;
     node->children = NULL;  // Inizialmente, nessun figlio
+    node->name = getFileName(node->path);
 
     folder = opendir(dir);
     
@@ -41,13 +42,13 @@ Node* initNode(char dir[], Node *father, int type) {
         if (node->children == NULL) {
             perror("realloc");
             closedir(folder);
-            free(node->name);
+            free(node->path);
             free(node);
             return NULL;
         }
 
         if (entry->d_type == DT_DIR) {
-          node->children[node->num_children - 1] = initNode(path, node, getFileName(path)[0] == '.' ? T_HIDDEN_DIR : T_DIR);  // Directory ricorsiva
+          node->children[node->num_children - 1] = initNode(path, node, node->name[0] == '.' ? T_HIDDEN_DIR : T_DIR);  // Directory ricorsiva
         } else if (entry->d_type == DT_REG) {
           node->children[node->num_children - 1] = getFile(entry->d_name, node, T_FILE);  // File normale
         } else {
@@ -70,12 +71,13 @@ Node* getFile(char *name, Node *father, int type) {
     if (strstr(name, ".") != NULL && type == T_FILE) 
       node->type = type;
     else 
-      node->type = T_BIN;
+      node->type = T_EXE;
     
-    node->name = strdup(name);  // Copia il nome del file
+    node->path = strdup(name);  // Copia il nome del file
     node->children = NULL;
     node->father = father;
     node->num_children = 0;
     node->is_expanded = 0;
+    node->name = getFileName(node->path);
     return node;
 }
