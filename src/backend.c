@@ -6,7 +6,7 @@
 
 #include "../include/shared.h"
 #include "../include/backend.h"
-
+#include "../include/icon_parse.h"
 
 Node* initNode(char dir[], Node *father, int type) {
     DIR *folder;
@@ -23,6 +23,7 @@ Node* initNode(char dir[], Node *father, int type) {
     node->is_expanded = 1;
     node->children = NULL;  // Inizialmente, nessun figlio
     node->name = getFileName(node->path);
+    node->icon = get_icon_for_path(node);
 
     folder = opendir(dir);
     
@@ -79,6 +80,7 @@ Node* getFile(char *name, Node *father, int type) {
     node->num_children = 0;
     node->is_expanded = 0;
     node->name = getFileName(node->path);
+    node->icon = get_icon_for_path(node);
     return node;
 }
 

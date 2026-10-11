@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <locale.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../include/frontend.h"
@@ -12,7 +13,8 @@
 
 void startTUI(Node *node, bool all) {
     
-    setlocale(LC_ALL, "");
+    setlocale(LC_CTYPE, "");
+    
     // Inizializzazione di ncurses
     initscr();            // Avvia la modalità ncurses
     keypad(stdscr, TRUE);
@@ -128,10 +130,11 @@ void printChilds(Node *node, Node *selected_node, char *tabs, bool isLast, bool 
     
     if (is_dir)
       print_colored(DEFAULT, false, false, "%s", node->is_expanded ? " ▼ " : " ▶ ");
-    
+
+    // wprintw(stdscr, L"%lc\n", node->icon);
     print_colored(
                   node->type, is_dir, (node == selected_node), 
-                  "%s\n", node->name
+                  "%lc %s\n",node->icon, node->name
                 );
    
     refresh();
@@ -144,6 +147,25 @@ void printChilds(Node *node, Node *selected_node, char *tabs, bool isLast, bool 
           printChilds(node->children[i], selected_node, new_tabs, i == node->num_children-1, all);
       }
     }
+}
+
+
+
+
+void print_colored(int color, bool bold, bool underlined, const char *format, ...) {
+    attron(COLOR_PAIR(color));
+    if (bold)       attron(A_BOLD);
+    if (underlined) attron(A_UNDERLINE);
+
+    // Gestione degli argomenti variabili
+    va_list args;
+    va_start(args, format);
+    vw_printw(stdscr, format, args); // vw_printw funziona come vprintf, ma con ncurses
+    va_end(args);
+
+    if (bold)       attroff(A_BOLD);
+    if (underlined) attroff(A_UNDERLINE);
+    attroff(COLOR_PAIR(color));
 }
 
 void toggle_dir(Node *node) {
@@ -213,21 +235,6 @@ Node* getOuter(Node *node, Node *origin) {
 }
 
 
-void print_colored(int color, bool bold, bool underlined, const char *format, ...) {
-    attron(COLOR_PAIR(color));
-    if (bold)       attron(A_BOLD);
-    if (underlined) attron(A_UNDERLINE);
-
-    // Gestione degli argomenti variabili
-    va_list args;
-    va_start(args, format);
-    vw_printw(stdscr, format, args); // vw_printw funziona come vprintf, ma con ncurses
-    va_end(args);
-
-    if (bold)       attroff(A_BOLD);
-    if (underlined) attroff(A_UNDERLINE);
-    attroff(COLOR_PAIR(color));
-}
 
 
 void initColors() {
@@ -241,6 +248,6 @@ void initColors() {
   init_pair(T_EXE,                    COLOR_GREEN,    default_bg  );      // File eseguibili
   init_pair(T_FILE_LINK,              COLOR_MAGENTA,  default_bg  );      // link a file
   init_pair(T_DIR_LINK,               COLOR_MAGENTA,  default_bg  );      // Link a cartelle
-  init_pair(TABS_COLOR,               COLOR_BLACK,    default_bg  );
+  init_pair(TABS_COLOR,               COLOR_CYAN,    default_bg  );
 }
 

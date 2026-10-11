@@ -6,6 +6,9 @@
 #include <string.h>
 
 
+HashMapElement *icons_by_name = NULL;
+HashMapElement *icons_by_extension = NULL;
+
 void free_icon_map(HashMapElement* map) {
     HashMapElement *current, *tmp;
     HASH_ITER(hh, map, current, tmp) {
@@ -49,13 +52,13 @@ wchar_t get_icon_for_path(Node *node) {
         filename = getFileName(node->name);
         icon = get_icon(icons_by_name, filename);
         if (icon == ' ')
-          return DEFAULT_DIR_ICON; 
+          icon = DEFAULT_DIR_ICON; 
         break;
       case T_FILE:
         extension = strrchr(getFileName(node->name), '.');
         icon = get_icon(icons_by_extension, extension);
         if (icon == ' ') 
-          return DEFAULT_FILE_ICON;
+          icon = DEFAULT_FILE_ICON;
         break;  
       case T_EXE:
         icon = DEFAULT_EXE_ICON;

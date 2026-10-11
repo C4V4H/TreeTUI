@@ -19,9 +19,9 @@ typedef struct {
     UT_hash_handle hh;
 } HashMapElement;
 
-HashMapElement* icons_by_extension  = NULL;
-HashMapElement* icons_by_name       = NULL;
-
+// icon_parse.h
+extern HashMapElement *icons_by_name;
+extern HashMapElement *icons_by_extension;
 
 void init_icon_by_extension_map();
 void init_icon_by_name_map();
